@@ -27,6 +27,7 @@ int main(int argc, char *argv[])
 	if (dataFile.fail())
 	{
 		cout << "Unable to open file " << argv[1] << endl;
+		cout << "Use ./EXE PATH_TO_FILE to choose an other one" << endl;
 		return EXIT_FAILURE;
 	}
 
