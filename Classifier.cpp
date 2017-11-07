@@ -80,24 +80,23 @@ void Classifier::test(const unsigned int nbTests) const
 	//Testing in the known set
 	if( nbTests > m_sizeTrain) cout << " - WARNING: Not enough known examples. Use " << m_sizeTrain << " instead of " << nbTests << endl;
 	n = min(nbTests, m_sizeTrain);
-	nbgoodResults = runClassification(n, 0, m_sizeTrain);
-	cout << " Accuracy with " << n << " known examples: " << 100.0 * nbgoodResults / n << "%" << endl;
+	cout << " Accuracy with " << n << " known examples:" << endl;
+	runClassification(n, 0, m_sizeTrain);
 
 
 	//Testing in the unknown set
 	if( nbTests > m_sizeTest) cout << " - WARNING: Not enough unknown examples. Use " << m_sizeTest << " instead of " << nbTests << endl;
 	n = min(nbTests, m_sizeTest);
-	nbgoodResults = runClassification(n, m_sizeTrain, m_total);
-	cout << " Accuracy with " << n << " unknown examples: " << 100.0 * nbgoodResults / n << "%" << endl;
+	cout << endl << " Accuracy with " << n << " unknown examples:" << endl;
+	runClassification(n, m_sizeTrain, m_total);
 }
 
-const unsigned int Classifier::runClassification(const unsigned int n, const unsigned int from, const unsigned int to) const
+const void Classifier::runClassification(const unsigned int n, const unsigned int from, const unsigned int to) const
 {
-	unsigned int nbOk = 0;
-	bool isSpam;
+	uint TP = 0, FP = 0, TN = 0, FN = 0;
+
 	string line;
-	vector<string> msg;
-	
+	vector<string> msg;	
 	vector<int> id;
 	for (int i = 0; i < to - from; ++i) id.push_back(i + from);
 	random_shuffle(id.begin(), id.end());
@@ -111,12 +110,22 @@ const unsigned int Classifier::runClassification(const unsigned int n, const uns
 
 		split(msg, line, is_any_of(TOKENIZERS));
 
-		isSpam = (msg.front() == "spam");
-		if(isClassedAsSpam(msg) == isSpam)
-			nbOk ++;
+		if(msg.front() == "spam")
+			if(isClassedAsSpam(msg)) TP ++;
+			else FN ++;
+		else
+			if(isClassedAsSpam(msg)) FP ++;
+			else TN ++;
 	}
 
-	return nbOk;
+
+	cout << "  Precision: " << (double) TP / (TP + FP) << endl;
+	cout << "  Recall: " << (double) TP / (TP + FN) << endl;
+	cout << "  False Positive Rate: " << (double) FP / (FP + TN) << endl;
+	cout << "  Accuracy: \033[01;34m" << (double) (TP + TN) / (TP + FN + TN + FP) << "\033[00m" << endl;
+	cout << "  F-measure: \033[01;34m" << (double) 2 * TP / ( 2 * TP + FP + FN) << "\033[00m" << endl;
+
+	//return nbOk;
 }
 
 const bool Classifier::isClassedAsSpam(vector<string> &msg) const

@@ -1,4 +1,5 @@
 #include "Classifier.hpp"
+#define DEFAULT_PATH "SMSSpamCollection"
 
 using namespace std;
 
@@ -15,24 +16,24 @@ exemple can be found here : http://archive.ics.uci.edu/ml/datasets/SMS+Spam+Coll
 int main(int argc, char *argv[])
 {
 	srand(time(NULL));
-	cout << "- WARNING: No dealing with unknown words! -" << endl;
 
 	ifstream dataFile;
 
 	if (argc > 1)
 		dataFile.open(argv[1]);
 	else
-		dataFile.open("SMSSpamCollection");
+		dataFile.open(DEFAULT_PATH);
 
 	if (dataFile.fail())
 	{
-		cout << "Unable to open file " << argv[1] << endl;
-		cout << "Use ./EXE PATH_TO_FILE to choose an other one" << endl;
+		cout << "Unable to open " << ((argc == 1)? "the default file" : argv[1]) << endl;
+		cout << "Use " << argv[0] << " PATH_TO_FILE to choose an other one" << endl;
 		return EXIT_FAILURE;
 	}
 
+	cout << "- WARNING: No dealing with unknown words! -" << endl;
 	Classifier spamFilter(dataFile, 70);
-	spamFilter.test(100);
+	spamFilter.test(1000);
 
 	dataFile.close();
 	return EXIT_SUCCESS;

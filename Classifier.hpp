@@ -18,7 +18,7 @@ public :
 
 private :
 	void train(const unsigned int percent);
-	const unsigned int runClassification(const unsigned int n, const unsigned int from, const unsigned int to) const;
+	const void runClassification(const unsigned int n, const unsigned int from, const unsigned int to) const;
 	const bool isClassedAsSpam(std::vector<std::string> &msg) const;
 
 	std::ifstream &m_file;
